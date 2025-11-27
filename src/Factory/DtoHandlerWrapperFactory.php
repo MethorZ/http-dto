@@ -9,6 +9,7 @@ use MethorZ\Dto\Exception\ValidationException;
 use MethorZ\Dto\Handler\DtoHandlerInterface;
 use MethorZ\Dto\Handler\DtoHandlerWrapper;
 use MethorZ\Dto\RequestDtoMapperInterface;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -32,7 +33,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 final readonly class DtoHandlerWrapperFactory
 {
     /**
-     * @param RequestDtoMapperInterface $dtoMapper
      * @param callable(ValidationException|MappingException): ResponseInterface $errorHandler
      */
     public function __construct(
@@ -43,6 +43,8 @@ final readonly class DtoHandlerWrapperFactory
 
     /**
      * Invoke factory from container
+     *
+     * @throws ContainerExceptionInterface
      */
     public function __invoke(ContainerInterface $container): self
     {
@@ -67,4 +69,3 @@ final readonly class DtoHandlerWrapperFactory
         );
     }
 }
-

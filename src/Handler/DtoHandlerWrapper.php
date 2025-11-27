@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MethorZ\Dto\Handler;
 
+use Laminas\Diactoros\Exception\InvalidArgumentException;
 use Laminas\Diactoros\Response\JsonResponse;
 use MethorZ\Dto\Exception\MappingException;
 use MethorZ\Dto\Exception\ValidationException;
@@ -46,6 +47,11 @@ final readonly class DtoHandlerWrapper implements RequestHandlerInterface
     ) {
     }
 
+    /**
+     * Handle the request by extracting DTO, validating, and calling the handler
+     *
+     * @throws InvalidArgumentException
+     */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         try {
@@ -53,15 +59,17 @@ final readonly class DtoHandlerWrapper implements RequestHandlerInterface
             $dtoClass = $this->extractDtoClass();
 
             if ($dtoClass === null) {
-                // No DTO parameter found, call with null
-                $response = $this->dtoHandler->__invoke($request, null);
-            } else {
-                // Map and validate request → DTO
-                $dto = $this->dtoMapper->map($dtoClass, $request);
-
-                // Call handler with validated DTO
-                $response = $this->dtoHandler->__invoke($request, $dto);
+                // No DTO parameter found - should not happen with DtoHandlerInterface
+                throw new MappingException(
+                    'Handler does not have a DTO parameter in __invoke() method',
+                );
             }
+
+            // Map and validate request → DTO
+            $dto = $this->dtoMapper->map($dtoClass, $request);
+
+            // Call handler with validated DTO
+            $response = $this->dtoHandler->__invoke($request, $dto);
 
             // Auto-serialize JsonSerializableDto responses
             if ($response instanceof JsonSerializableDto) {
@@ -119,6 +127,7 @@ final readonly class DtoHandlerWrapper implements RequestHandlerInterface
 
         // Try to get type from type hint first
         if ($dtoType instanceof ReflectionNamedType && ! $dtoType->isBuiltin()) {
+            /** @var class-string */
             return $dtoType->getName();
         }
 
@@ -129,6 +138,7 @@ final readonly class DtoHandlerWrapper implements RequestHandlerInterface
 
             // Already fully qualified?
             if (str_starts_with($type, '\\')) {
+                /** @var class-string */
                 return ltrim($type, '\\');
             }
 
@@ -141,9 +151,11 @@ final readonly class DtoHandlerWrapper implements RequestHandlerInterface
             // Assume same namespace as handler
             $namespace = $reflection->getNamespaceName();
             if ($namespace) {
+                /** @var class-string */
                 return $namespace . '\\' . $type;
             }
 
+            /** @var class-string */
             return $type;
         }
 
@@ -153,9 +165,8 @@ final readonly class DtoHandlerWrapper implements RequestHandlerInterface
     /**
      * Resolve a class name using the handler's use statements
      *
-     * @param ReflectionClass $reflection
-     * @param string $className
-     * @return string|null
+     * @param ReflectionClass<DtoHandlerInterface> $reflection
+     * @return class-string|null
      */
     private function resolveClassFromUseStatements(ReflectionClass $reflection, string $className): ?string
     {
@@ -176,6 +187,7 @@ final readonly class DtoHandlerWrapper implements RequestHandlerInterface
                 $alias     = $match[2] ?? basename(str_replace('\\', '/', $fullClass));
 
                 if ($alias === $className) {
+                    /** @var class-string */
                     return $fullClass;
                 }
             }
@@ -184,4 +196,3 @@ final readonly class DtoHandlerWrapper implements RequestHandlerInterface
         return null;
     }
 }
-
