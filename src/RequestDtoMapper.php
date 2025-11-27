@@ -109,7 +109,12 @@ final readonly class RequestDtoMapper implements RequestDtoMapperInterface
     }
 
     /**
-     * Extract data from request body and route attributes
+     * Extract data from request body, query parameters, and route attributes
+     *
+     * Priority order (highest to lowest):
+     * 1. Route attributes (e.g., {id} from /items/{id})
+     * 2. Request body (POST/PUT JSON or form data)
+     * 3. Query parameters (e.g., ?limit=10&offset=0)
      *
      * @return array<string, mixed>
      */
@@ -117,13 +122,47 @@ final readonly class RequestDtoMapper implements RequestDtoMapperInterface
     {
         $data = [];
 
-        // Get parsed body (POST/PUT data)
-        $body = $request->getParsedBody();
-        if (is_array($body)) {
-            $data = $body;
+        // Start with query parameters (lowest priority)
+        $queryParams = $request->getQueryParams();
+        if (is_array($queryParams)) {
+            $data = $queryParams;
         }
 
-        // Merge route attributes (e.g., {id} from route)
+        // Get parsed body (POST/PUT data) - higher priority than query params
+        $body = $request->getParsedBody();
+
+        if (is_array($body) && $body !== []) {
+            // Body already parsed and contains data (form data or upstream middleware)
+            $data = array_merge($data, $body);
+        } else {
+            // PSR-7 doesn't auto-parse JSON - do it manually if Content-Type is JSON
+            $contentType = $request->getHeaderLine('Content-Type');
+
+            if (strpos($contentType, 'application/json') !== false) {
+                // Get raw body as string
+                $bodyStream = $request->getBody();
+
+                // Try to rewind if seekable
+                try {
+                    if ($bodyStream->isSeekable()) {
+                        $bodyStream->rewind();
+                    }
+                } catch (\Exception $e) {
+                    // Ignore rewind failures - stream might not be seekable
+                }
+
+                $rawBody = $bodyStream->__toString();
+
+                if ($rawBody !== '' && $rawBody !== '{}' && $rawBody !== 'null') {
+                    $jsonData = json_decode($rawBody, true);
+                    if (is_array($jsonData) && $jsonData !== []) {
+                        $data = array_merge($data, $jsonData);
+                    }
+                }
+            }
+        }
+
+        // Merge route attributes (highest priority - e.g., {id} from route)
         $attributes = $request->getAttributes();
         foreach ($attributes as $key => $value) {
             // Skip internal PSR-7 attributes
