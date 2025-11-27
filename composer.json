@@ -1,0 +1,72 @@
+{
+    "name": "methorz/http-dto",
+    "description": "Automatic HTTP ↔ DTO conversion via PSR-15 middleware",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "dto",
+        "http",
+        "middleware",
+        "psr-15",
+        "serialization",
+        "validation"
+    ],
+    "authors": [
+        {
+            "name": "Thorsten Merz",
+            "email": "methorz@spammerz.de"
+        }
+    ],
+    "require": {
+        "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
+        "psr/http-message": "^1.0 || ^2.0",
+        "ramsey/uuid": "^4.7"
+    },
+    "suggest": {
+        "symfony/validator": "For DTO validation using Symfony Validator attributes (use SymfonyValidatorAdapter)"
+    },
+    "require-dev": {
+        "laminas/laminas-diactoros": "^3.0",
+        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan-strict-rules": "^1.5",
+        "phpunit/phpunit": "^10.0 || ^11.0",
+        "psr/container": "^2.0",
+        "psr/http-server-middleware": "^1.0",
+        "slevomat/coding-standard": "^8.14",
+        "squizlabs/php_codesniffer": "^3.8",
+        "symfony/validator": "^6.4 || ^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MethorZ\\Dto\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MethorZ\\Dto\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "sort-packages": true
+    },
+    "scripts": {
+        "analyze": "phpstan analyse",
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
+        "quality": [
+            "@cs-check",
+            "@analyze"
+        ],
+        "quality:fix": [
+            "@cs-fix",
+            "@analyze"
+        ],
+        "test": "phpunit",
+        "test:coverage": "phpunit --coverage-html coverage"
+    }
+}

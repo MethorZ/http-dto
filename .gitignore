@@ -1,0 +1,23 @@
+# Composer
+/vendor/
+composer.lock
+
+# PHPUnit
+.phpunit.cache/
+coverage/
+.phpunit.result.cache
+
+# PHPStan
+phpstan-baseline.neon
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
