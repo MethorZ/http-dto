@@ -75,11 +75,8 @@ final class CasterRegistryTest extends TestCase
     {
         // phpcs:disable SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter -- Intentional: parameters used for type reflection
         $closure = match ($type) {
-            // @phpstan-ignore parameterNotUsed.unused (intentional - used for reflection)
             'string' => fn (string $param) => null,
-            // @phpstan-ignore parameterNotUsed.unused (intentional - used for reflection)
             'int' => fn (int $param) => null,
-            // @phpstan-ignore parameterNotUsed.unused (intentional - used for reflection)
             'SomeCustomType' => fn (\stdClass $param) => null,
             default => throw new \InvalidArgumentException("Unsupported type: {$type}"),
         };

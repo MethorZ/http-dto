@@ -79,6 +79,7 @@ final readonly class DtoHandlerWrapper implements RequestHandlerInterface
                 );
             }
 
+            // @phpstan-ignore-next-line return.unusedType (False positive - reachable when response is not JsonSerializableDto)
             return $response;
         } catch (ValidationException | MappingException $e) {
             // Convert exception to error response

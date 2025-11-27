@@ -14,6 +14,9 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+use function assert;
+use function is_callable;
+
 /**
  * Factory for creating DtoHandlerWrapper instances
  *
@@ -48,10 +51,13 @@ final readonly class DtoHandlerWrapperFactory
      */
     public function __invoke(ContainerInterface $container): self
     {
-        return new self(
-            $container->get(RequestDtoMapperInterface::class),
-            $container->get('dto.error_handler'),
-        );
+        $dtoMapper = $container->get(RequestDtoMapperInterface::class);
+        $errorHandler = $container->get('dto.error_handler');
+
+        assert($dtoMapper instanceof RequestDtoMapperInterface);
+        assert(is_callable($errorHandler));
+
+        return new self($dtoMapper, $errorHandler);
     }
 
     /**
