@@ -11,11 +11,7 @@ final class AbstractDtoTest extends TestCase
 {
     public function testCanCreateConcreteDto(): void
     {
-        $dto = new readonly class ('test-value') extends AbstractDto {
-            public function __construct(public string $value)
-            {
-            }
-        };
+        $dto = new ConcreteTestDto('test-value');
 
         $this->assertInstanceOf(AbstractDto::class, $dto);
         $this->assertSame('test-value', $dto->value);
@@ -23,11 +19,7 @@ final class AbstractDtoTest extends TestCase
 
     public function testDtoIsReadonly(): void
     {
-        $dto = new readonly class ('initial') extends AbstractDto {
-            public function __construct(public string $value)
-            {
-            }
-        };
+        $dto = new ConcreteTestDto('initial');
 
         $this->assertSame('initial', $dto->value);
 
@@ -38,13 +30,7 @@ final class AbstractDtoTest extends TestCase
 
     public function testMultiplePropertiesDto(): void
     {
-        $dto = new readonly class ('John', 25) extends AbstractDto {
-            public function __construct(
-                public string $name,
-                public int $age,
-            ) {
-            }
-        };
+        $dto = new MultiPropertyTestDto('John', 25);
 
         $this->assertSame('John', $dto->name);
         $this->assertSame(25, $dto->age);

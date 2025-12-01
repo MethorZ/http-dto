@@ -8,7 +8,7 @@ coverage/
 .phpunit.result.cache
 
 # PHPStan
-phpstan-baseline.neon
+# phpstan-baseline.neon - keep tracked for CI
 
 # IDE
 .idea/

@@ -1,0 +1,596 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined static method MethorZ\\Dto\\Caster\\EnumCaster\:\:castToEnum\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: src/Caster/CollectionCaster.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Caster\\CollectionCaster\:\:castItem\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: src/Caster/CollectionCaster.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Caster\\CollectionCaster\:\:castParameterValue\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 2
+			path: src/Caster/CollectionCaster.php
+
+		-
+			message: '#^Parameter \#1 \$data of method MethorZ\\Dto\\Caster\\CollectionCaster\:\:castToDto\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Caster/CollectionCaster.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Caster\\DtoCaster\:\:castParameter\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: src/Caster/DtoCaster.php
+
+		-
+			message: '#^Parameter \#1 \$dtoClass of method MethorZ\\Dto\\Caster\\DtoCaster\:\:instantiateDto\(\) expects class\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Caster/DtoCaster.php
+
+		-
+			message: '#^Parameter \#2 \$data of method MethorZ\\Dto\\Caster\\DtoCaster\:\:instantiateDto\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Caster/DtoCaster.php
+
+		-
+			message: '#^PHPDoc tag @var with type BackedEnum is not subtype of native type class\-string\<UnitEnum\>\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: src/Caster/EnumCaster.php
+
+		-
+			message: '#^Instanceof between MethorZ\\Dto\\Response\\JsonSerializableDto and MethorZ\\Dto\\Response\\JsonSerializableDto will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: src/Handler/DtoHandlerWrapper.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Middleware\\AutoDtoInjectionMiddleware\:\:process\(\) should return Psr\\Http\\Message\\ResponseInterface but returns MethorZ\\Dto\\Response\\JsonSerializableDto\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Middleware/AutoDtoInjectionMiddleware.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Middleware\\DtoParameterInjectionMiddleware\:\:process\(\) should return Psr\\Http\\Message\\ResponseInterface but returns MethorZ\\Dto\\Response\\JsonSerializableDto\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Middleware/DtoParameterInjectionMiddleware.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/RequestDtoMapper.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\RequestDtoMapper\:\:mapConstructorParameters\(\) throws checked exception MethorZ\\Dto\\Caster\\CastException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: src/RequestDtoMapper.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Response\\AbstractDto\:\:fromArray\(\) throws checked exception InvalidArgumentException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: src/Response/AbstractDto.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Response\\AbstractDto\:\:fromArray\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: src/Response/AbstractDto.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 2
+			path: src/Response/AbstractDto.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Response\\JsonResponseFactory\:\:create\(\) throws checked exception InvalidArgumentException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 3
+			path: src/Response/JsonResponseFactory.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Response\\JsonResponseFactory\:\:create\(\) throws checked exception JsonException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: src/Response/JsonResponseFactory.php
+
+		-
+			message: '#^Parameter \#1 \$content of method Psr\\Http\\Message\\StreamFactoryInterface\:\:createStream\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Response/JsonResponseFactory.php
+
+		-
+			message: '#^Parameter \#1 \$data of method MethorZ\\Dto\\Transformer\\DtoTransformer\:\:flatten\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Transformer/DtoTransformer.php
+
+		-
+			message: '#^Parameter \#1 \$data of method MethorZ\\Dto\\Transformer\\DtoTransformer\:\:maskSensitiveData\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Transformer/DtoTransformer.php
+
+		-
+			message: '#^Parameter \#1 \$data of method MethorZ\\Dto\\Transformer\\DtoTransformer\:\:toCamelCase\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Transformer/DtoTransformer.php
+
+		-
+			message: '#^Parameter \#1 \$data of method MethorZ\\Dto\\Transformer\\DtoTransformer\:\:toSnakeCase\(\) expects array\<string, mixed\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Transformer/DtoTransformer.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between string and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/Transformer/DtoTransformer.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<int, MethorZ\\Dto\\Tests\\Fixtures\\NestedDto\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/RequestDtoMapperIntegrationTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Integration\\RequestDtoMapperIntegrationTest\:\:testMapsComplexDtoWithAllCasters\(\) throws checked exception InvalidArgumentException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Integration/RequestDtoMapperIntegrationTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Integration\\RequestDtoMapperIntegrationTest\:\:testMapsComplexDtoWithAllCasters\(\) throws checked exception MethorZ\\Dto\\Exception\\MappingException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Integration/RequestDtoMapperIntegrationTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Integration\\RequestDtoMapperIntegrationTest\:\:testMapsComplexDtoWithAllCasters\(\) throws checked exception MethorZ\\Dto\\Exception\\ValidationException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Integration/RequestDtoMapperIntegrationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<ReflectionParameter\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Cache/ReflectionCacheTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Caster/CasterRegistryTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\CasterRegistryTest\:\:createParameter\(\) throws checked exception InvalidArgumentException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/CasterRegistryTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\CasterRegistryTest\:\:createParameter\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/CasterRegistryTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\CasterRegistryTest\:\:testMultipleCastersCanBeRegistered\(\) throws checked exception PHPUnit\\Event\\NoPreviousThrowableException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/CasterRegistryTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\CollectionCasterTest\:\:createParameter\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/CollectionCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\CollectionCasterTest\:\:testCastsCollectionOfDtos\(\) throws checked exception MethorZ\\Dto\\Caster\\CastException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/CollectionCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\DateTimeCasterTest\:\:createParameter\(\) throws checked exception InvalidArgumentException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/DateTimeCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\DateTimeCasterTest\:\:createParameter\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/DateTimeCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\DateTimeCasterTest\:\:testCastsFromIso8601String\(\) throws checked exception MethorZ\\Dto\\Caster\\CastException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/DateTimeCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\DateTimeCasterTest\:\:testCastsFromTimestamp\(\) throws checked exception MethorZ\\Dto\\Caster\\CastException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/DateTimeCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\DateTimeCasterTest\:\:testHandlesNullableTypes\(\) throws checked exception MethorZ\\Dto\\Caster\\CastException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/DateTimeCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\DateTimeCasterTest\:\:testReturnsExistingDateTimeInstance\(\) throws checked exception MethorZ\\Dto\\Caster\\CastException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/DateTimeCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\DateTimeCasterTest\:\:testThrowsExceptionForInvalidString\(\) throws checked exception MethorZ\\Dto\\Caster\\CastException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/DateTimeCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\DateTimeCasterTest\:\:testThrowsExceptionForInvalidType\(\) throws checked exception MethorZ\\Dto\\Caster\\CastException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/DateTimeCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\ScalarCasterTest\:\:createParameter\(\) throws checked exception InvalidArgumentException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/ScalarCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\ScalarCasterTest\:\:createParameter\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/ScalarCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\ScalarCasterTest\:\:testCastsToBool\(\) throws checked exception MethorZ\\Dto\\Caster\\CastException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 2
+			path: tests/Unit/Caster/ScalarCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\ScalarCasterTest\:\:testCastsToFloat\(\) throws checked exception MethorZ\\Dto\\Caster\\CastException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/ScalarCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\ScalarCasterTest\:\:testCastsToInt\(\) throws checked exception MethorZ\\Dto\\Caster\\CastException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/ScalarCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\ScalarCasterTest\:\:testCastsToString\(\) throws checked exception MethorZ\\Dto\\Caster\\CastException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/ScalarCasterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Caster\\ScalarCasterTest\:\:testHandlesNullableTypes\(\) throws checked exception MethorZ\\Dto\\Caster\\CastException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Caster/ScalarCasterTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<string, string\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Exception/ValidationExceptionTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\RequestDtoMapperTest\:\:testMapThrowsExceptionForNonExistentClass\(\) throws checked exception MethorZ\\Dto\\Exception\\MappingException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/RequestDtoMapperTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\RequestDtoMapperTest\:\:testMapThrowsExceptionForNonExistentClass\(\) throws checked exception MethorZ\\Dto\\Exception\\ValidationException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/RequestDtoMapperTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\RequestDtoMapperTest\:\:testMapThrowsExceptionForNonExistentClass\(\) throws checked exception PHPUnit\\Event\\NoPreviousThrowableException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/RequestDtoMapperTest.php
+
+		-
+			message: '#^Parameter \#1 \$dtoClass of method MethorZ\\Dto\\RequestDtoMapper\:\:map\(\) expects class\-string\<NonExistentClass\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/RequestDtoMapperTest.php
+
+		-
+			message: '#^Readonly property MethorZ\\Dto\\Tests\\Unit\\Response\\ConcreteTestDto\:\:\$value is assigned outside of its declaring class\.$#'
+			identifier: property.readOnlyAssignOutOfClass
+			count: 1
+			path: tests/Unit/Response/AbstractDtoTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<string, mixed\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 4
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:111 constructor invoked with 0 parameters, 2 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:129 constructor invoked with 0 parameters, 1\-2 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:149 constructor invoked with 0 parameters, 2 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:16 constructor invoked with 0 parameters, 2 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:164 constructor invoked with 0 parameters, 2 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:39 constructor invoked with 0 parameters, 2 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:64 constructor invoked with 0 parameters, 2 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:91 constructor invoked with 0 parameters, 2 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:111\:\:fromArray\(\) throws checked exception InvalidArgumentException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:111\:\:fromArray\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:129\:\:fromArray\(\) throws checked exception InvalidArgumentException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:129\:\:fromArray\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:149\:\:fromArray\(\) throws checked exception InvalidArgumentException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:149\:\:fromArray\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:164\:\:fromArray\(\) throws checked exception InvalidArgumentException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:164\:\:fromArray\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:16\:\:fromArray\(\) throws checked exception InvalidArgumentException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:16\:\:fromArray\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:39\:\:fromArray\(\) throws checked exception InvalidArgumentException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:39\:\:fromArray\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:64\:\:fromArray\(\) throws checked exception InvalidArgumentException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:64\:\:fromArray\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:91\:\:fromArray\(\) throws checked exception InvalidArgumentException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:91\:\:fromArray\(\) throws checked exception ReflectionException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Parameter \#1 \$id of class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:111 constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Parameter \#1 \$id of class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:129 constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Parameter \#1 \$id of class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:149 constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Parameter \#1 \$id of class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:16 constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Parameter \#1 \$id of class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:164 constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Parameter \#1 \$id of class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:39 constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Parameter \#1 \$id of class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:64 constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Parameter \#1 \$id of class class@anonymous/tests/Unit/Trait/DtoArrayConversionTraitTest\.php\:91 constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
+
+		-
+			message: '#^Cannot access offset ''home_address'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Transformer/DtoTransformerTest.php
+
+		-
+			message: '#^Cannot access offset ''password'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Transformer/DtoTransformerTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Unit/Transformer/DtoTransformerTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Validator/NullValidatorTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Validator\\NullValidatorTest\:\:testValidateAcceptsAnyObject\(\) throws checked exception MethorZ\\Dto\\Exception\\ValidationException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Validator/NullValidatorTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Validator\\NullValidatorTest\:\:testValidateDoesNotThrowException\(\) throws checked exception MethorZ\\Dto\\Exception\\ValidationException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Validator/NullValidatorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Validator/SymfonyValidatorAdapterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Validator\\SymfonyValidatorAdapterTest\:\:testValidatePassesForValidObject\(\) throws checked exception MethorZ\\Dto\\Exception\\ValidationException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Validator/SymfonyValidatorAdapterTest.php
+
+		-
+			message: '#^Method MethorZ\\Dto\\Tests\\Unit\\Validator\\SymfonyValidatorAdapterTest\:\:testValidateThrowsExceptionForInvalidObject\(\) throws checked exception MethorZ\\Dto\\Exception\\ValidationException but it''s missing from the PHPDoc @throws tag\.$#'
+			identifier: missingType.checkedException
+			count: 1
+			path: tests/Unit/Validator/SymfonyValidatorAdapterTest.php
+
