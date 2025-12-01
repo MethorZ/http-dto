@@ -4,6 +4,7 @@
 
 [![CI](https://github.com/MethorZ/http-dto/actions/workflows/ci.yml/badge.svg)](https://github.com/MethorZ/http-dto/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/MethorZ/http-dto/graph/badge.svg)](https://codecov.io/gh/MethorZ/http-dto)
+[![PHPStan](https://img.shields.io/badge/PHPStan-level%209-brightgreen.svg)](https://phpstan.org/)
 [![PHP Version](https://img.shields.io/badge/php-%5E8.2-blue.svg)](https://php.net)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
