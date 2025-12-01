@@ -1,18 +1,21 @@
 # methorz/http-dto
 
-**Automatic HTTP ↔ DTO conversion via PSR-15 middleware for Mezzio**
+**Automatic HTTP ↔ DTO conversion with validation for PSR-15 applications**
 
 [![PHP Version](https://img.shields.io/badge/php-%5E8.2-blue.svg)](https://php.net)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ## What is this?
 
-This package provides **automatic** Data Transfer Object (DTO) handling for PSR-15 middleware applications (Mezzio, Laminas). It eliminates boilerplate code by:
+This package provides **automatic** Data Transfer Object (DTO) handling for PSR-15 middleware applications (Mezzio, Laminas) using the **DtoHandlerWrapper** pattern. It eliminates boilerplate code by:
 
-- 🎯 **Automatically mapping** HTTP requests to Request DTOs
+- 🎯 **Automatically extracting** data from HTTP requests (JSON body, query params, route attributes)
+- 🔄 **Automatically mapping** request data to Request DTOs
 - ✅ **Automatically validating** Request DTOs using Symfony Validator
 - 🚀 **Automatically injecting** validated DTOs as handler parameters
 - 📦 **Automatically serializing** Response DTOs to JSON responses
+
+**Key Innovation**: The `DtoHandlerWrapper` pattern wraps your `DtoHandlerInterface` implementations, handling all DTO concerns without requiring global middleware in your pipeline.
 
 ## Installation
 
@@ -144,46 +147,64 @@ final readonly class CreateItemHandler implements DtoHandlerInterface
 
 ## Setup
 
-### 1. Register Middlewares in Pipeline
-
-Add to your `config/pipeline.php` **in this order**:
+### 1. Register DtoHandlerWrapperFactory in ConfigProvider
 
 ```php
-use Methorz\Dto\Middleware\AutoDtoInjectionMiddleware;
-use Methorz\Dto\Middleware\AutoJsonResponseMiddleware;
-
-return function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
-    // ... other middleware ...
-
-    $app->pipe(RouteMiddleware::class);
-
-    // Request DTO injection (BEFORE dispatch)
-    $app->pipe(AutoDtoInjectionMiddleware::class);
-
-    $app->pipe(DispatchMiddleware::class);
-
-    // Response DTO serialization (AFTER dispatch)
-    $app->pipe(AutoJsonResponseMiddleware::class);
-
-    // ... other middleware ...
-};
-```
-
-### 2. Register in ConfigProvider
-
-```php
-use Methorz\Dto\Middleware\AutoDtoInjectionMiddleware;
-use Methorz\Dto\Middleware\AutoJsonResponseMiddleware;
-use Methorz\Dto\RequestDtoMapperInterface;
-use Laminas\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
+use MethorZ\Dto\Factory\DtoHandlerWrapperFactory;
+use MethorZ\Dto\RequestDtoMapperInterface;
+use MethorZ\Dto\Exception\MappingException;
+use MethorZ\Dto\Exception\ValidationException;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
 
 public function getDependencies(): array
 {
     return [
         'factories' => [
-            RequestDtoMapperInterface::class  => ReflectionBasedAbstractFactory::class,
-            AutoDtoInjectionMiddleware::class => ReflectionBasedAbstractFactory::class,
-            AutoJsonResponseMiddleware::class => ReflectionBasedAbstractFactory::class,
+            // DTO Handler Wrapper Factory
+            DtoHandlerWrapperFactory::class => function (ContainerInterface $container) {
+                return new DtoHandlerWrapperFactory(
+                    $container->get(RequestDtoMapperInterface::class),
+                    $container->get('dto.error_handler'),
+                );
+            },
+        ],
+        'services' => [
+            // Error handler for DTO validation/mapping failures
+            'dto.error_handler' => function (ValidationException|MappingException $e): ResponseInterface {
+                if ($e instanceof ValidationException) {
+                    return new JsonResponse([
+                        'success' => false,
+                        'errors' => $e->getErrors(),
+                    ], 422);
+                }
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => $e->getMessage(),
+                ], 400);
+            },
+        ],
+    ];
+}
+```
+
+### 2. Wrap Your Handlers in Routes
+
+Use `DtoHandlerWrapperFactory` to wrap your `DtoHandlerInterface` implementations:
+
+```php
+use Item\Application\Handler\CreateItemHandler;
+use MethorZ\Dto\Factory\DtoHandlerWrapperFactory;
+
+public function getRoutes(): array
+{
+    return [
+        [
+            'allowed_methods' => ['POST'],
+            'path'            => '/api/v1/items',
+            'middleware'      => [
+                DtoHandlerWrapperFactory::class . '::wrap:' . CreateItemHandler::class,
+            ],
         ],
     ];
 }
@@ -194,16 +215,18 @@ public function getDependencies(): array
 ```
 HTTP POST /api/items
     ↓
-AutoDtoInjectionMiddleware
-    ├─ Maps request → CreateItemRequest
-    ├─ Validates CreateItemRequest
-    └─ Injects as parameter
+RouteMiddleware (matches route)
     ↓
-Handler.__invoke(request, CreateItemRequest)
-    ├─ Calls: service.execute($dto)
-    └─ Returns: ItemResponse
+DispatchMiddleware
     ↓
-AutoJsonResponseMiddleware
+DtoHandlerWrapper (wraps CreateItemHandler)
+    ├─ Extracts DTO class from handler signature
+    ├─ Extracts data from request (JSON body, query params, route attributes)
+    ├─ Maps data → CreateItemRequest DTO
+    ├─ Validates CreateItemRequest (Symfony Validator)
+    ├─ Calls: Handler.__invoke(request, CreateItemRequest)
+    │   ├─ Handler calls: service.execute($dto)
+    │   └─ Handler returns: ItemResponse (implements JsonSerializableDto)
     ├─ Detects: ItemResponse implements JsonSerializableDto
     ├─ Calls: $response->jsonSerialize()
     ├─ Gets: $response->getStatusCode() → 201
@@ -212,6 +235,13 @@ AutoJsonResponseMiddleware
 HTTP Response: 201 Created
 {"id": "...", "name": "...", "description": "..."}
 ```
+
+**Key Benefits of DtoHandlerWrapper Pattern:**
+- ✅ **Single pattern** - One component handles request DTO mapping AND response serialization
+- ✅ **Handler-specific** - Only processes requests to DtoHandlerInterface implementations
+- ✅ **No middleware overhead** - Doesn't process every request in the pipeline
+- ✅ **Cleaner architecture** - Clear separation: middleware for cross-cutting, wrapper for handler-specific
+- ✅ **Easy to use** - Just wrap your handler in routes configuration
 
 ## Error Handling
 
@@ -262,6 +292,20 @@ The middleware automatically handles validation errors:
 - Symfony Validator
 - Mezzio or any PSR-15 compatible framework
 
+## Related Packages
+
+This package is part of the MethorZ HTTP middleware ecosystem:
+
+| Package | Description |
+|---------|-------------|
+| **[methorz/http-dto](https://github.com/methorz/http-dto)** | Automatic HTTP ↔ DTO conversion (this package) |
+| **[methorz/http-problem-details](https://github.com/methorz/http-problem-details)** | RFC 7807 error handling middleware |
+| **[methorz/http-cache-middleware](https://github.com/methorz/http-cache-middleware)** | HTTP caching with ETag support |
+| **[methorz/http-request-logger](https://github.com/methorz/http-request-logger)** | Structured logging with request tracking |
+| **[methorz/openapi-generator](https://github.com/methorz/openapi-generator)** | Automatic OpenAPI spec generation from DTOs |
+
+These packages work together seamlessly in PSR-15 applications.
+
 ## License
 
 MIT License. See [LICENSE](LICENSE) file for details.
@@ -269,7 +313,6 @@ MIT License. See [LICENSE](LICENSE) file for details.
 ## Author
 
 **Thorsten Merz**
-Website: [methorz.com](https://methorz.com)
 
 ---
 

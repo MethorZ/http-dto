@@ -31,15 +31,7 @@ final readonly class ScalarCaster implements CasterInterface
         }
 
         // Cast to appropriate scalar type
-        return match ($typeName) {
-            'string' => is_scalar($value) || $value === null ? (string) $value : $value,
-            'int' => is_numeric($value) || $value === null ? (int) $value : $value,
-            'float' => is_numeric($value) || $value === null ? (float) $value : $value,
-            'bool' => (bool) $value,
-            // 'array' removed - handled by CollectionCaster
-            'mixed' => $value,
-            default => $value, // Non-scalar type, pass through
-        };
+        return $this->castToScalarType($value, $typeName);
     }
 
     public function supports(ReflectionParameter $parameter): bool
@@ -54,5 +46,44 @@ final readonly class ScalarCaster implements CasterInterface
 
         // Note: 'array' removed - arrays should be handled by CollectionCaster
         return in_array($typeName, ['string', 'int', 'float', 'bool', 'mixed'], true);
+    }
+
+    /**
+     * Cast value to the specified scalar type
+     */
+    private function castToScalarType(mixed $value, string $typeName): mixed
+    {
+        return match ($typeName) {
+            'string' => $this->toScalarString($value),
+            'int' => $this->toInt($value),
+            'float' => $this->toFloat($value),
+            'bool' => (bool) $value,
+            'mixed' => $value,
+            default => $value,
+        };
+    }
+
+    /**
+     * Cast value to string if possible
+     */
+    private function toScalarString(mixed $value): mixed
+    {
+        return is_scalar($value) || $value === null ? (string) $value : $value;
+    }
+
+    /**
+     * Cast value to int if possible
+     */
+    private function toInt(mixed $value): mixed
+    {
+        return is_numeric($value) || $value === null ? (int) $value : $value;
+    }
+
+    /**
+     * Cast value to float if possible
+     */
+    private function toFloat(mixed $value): mixed
+    {
+        return is_numeric($value) || $value === null ? (float) $value : $value;
     }
 }

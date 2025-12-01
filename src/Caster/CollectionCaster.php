@@ -158,17 +158,10 @@ final readonly class CollectionCaster implements CasterInterface
             return $item;
         }
 
-        // If item type is a class and item is an array, use DtoCaster for proper nested handling
+        // If item type is a class and item is an array, cast to DTO
         if (class_exists($itemType) && is_array($item)) {
             /** @var array<string, mixed> $item */
-
-            // Use DtoCaster directly if available for full pipeline support
-            if ($this->dtoCaster !== null) {
-                return $this->dtoCaster->instantiateDto($itemType, $item);
-            }
-
-            // Fallback to basic instantiation
-            return $this->castToDto($item, $itemType);
+            return $this->castItemToDto($item, $itemType);
         }
 
         // Handle Enums
@@ -177,13 +170,26 @@ final readonly class CollectionCaster implements CasterInterface
         }
 
         // Scalar types - basic casting
-        return match ($itemType) {
-            'string' => is_scalar($item) || $item === null ? (string) $item : $item,
-            'int' => is_numeric($item) || $item === null ? (int) $item : $item,
-            'float' => is_numeric($item) || $item === null ? (float) $item : $item,
-            'bool' => (bool) $item,
-            default => $item,
-        };
+        return $this->castScalar($item, $itemType);
+    }
+
+    /**
+     * Cast an array item to a DTO
+     *
+     * @param array<string, mixed> $item
+     * @param class-string $itemType
+     * @throws CastException
+     * @throws \ReflectionException
+     */
+    private function castItemToDto(array $item, string $itemType): object
+    {
+        // Use DtoCaster directly if available for full pipeline support
+        if ($this->dtoCaster !== null) {
+            return $this->dtoCaster->instantiateDto($itemType, $item);
+        }
+
+        // Fallback to basic instantiation
+        return $this->castToDto($item, $itemType);
     }
 
     /**
@@ -235,16 +241,14 @@ final readonly class CollectionCaster implements CasterInterface
      * Cast parameter value - uses registry if available for proper nesting
      *
      * @throws CastException
-     * @phpcs:disable Generic.Metrics.CyclomaticComplexity.MaxExceeded
      */
     private function castParameterValue(mixed $value, \ReflectionParameter $param): mixed
     {
         // Use registry for proper casting if available
-        if ($this->registry !== null) {
-            $caster = $this->registry->resolve($param);
-            if ($caster !== null && ! $caster instanceof self) {
-                return $caster->cast($value, $param);
-            }
+        $registryCasted = $this->tryCastViaRegistry($value, $param);
+
+        if ($registryCasted !== null) {
+            return $registryCasted;
         }
 
         // Fallback to basic handling
@@ -263,28 +267,94 @@ final readonly class CollectionCaster implements CasterInterface
 
         // Handle array parameters - check if it's a typed collection
         if ($typeName === 'array' && is_array($value)) {
-            $itemType = $this->extractItemType($param);
-
-            // If we have type information and it's a class, cast each item
-            if ($itemType !== null && class_exists($itemType)) {
-                return array_map(
-                    fn (mixed $item): mixed => is_array($item)
-                        ? $this->castToDto($item, $itemType)
-                        : $item,
-                    $value,
-                );
-            }
-
-            return $value;
+            return $this->castTypedArray($value, $param);
         }
 
         // Basic scalar casting
+        return $this->castScalar($value, $typeName);
+    }
+
+    /**
+     * Try to cast value using the registry
+     *
+     * @return mixed|null Returns null if registry couldn't cast, otherwise the casted value
+     * @throws CastException
+     */
+    private function tryCastViaRegistry(mixed $value, \ReflectionParameter $param): mixed
+    {
+        if ($this->registry === null) {
+            return null;
+        }
+
+        $caster = $this->registry->resolve($param);
+
+        if ($caster !== null && ! $caster instanceof self) {
+            return $caster->cast($value, $param);
+        }
+
+        return null;
+    }
+
+    /**
+     * Cast a typed array parameter
+     *
+     * @param array<mixed> $value
+     * @return array<mixed>
+     * @throws CastException
+     * @throws \ReflectionException
+     */
+    private function castTypedArray(array $value, \ReflectionParameter $param): array
+    {
+        $itemType = $this->extractItemType($param);
+
+        // If we have type information and it's a class, cast each item
+        if ($itemType !== null && class_exists($itemType)) {
+            return array_map(
+                fn (mixed $item): mixed => is_array($item)
+                    ? $this->castToDto($item, $itemType)
+                    : $item,
+                $value,
+            );
+        }
+
+        return $value;
+    }
+
+    /**
+     * Cast value to scalar type
+     */
+    private function castScalar(mixed $value, string $typeName): mixed
+    {
         return match ($typeName) {
-            'string' => is_scalar($value) || $value === null ? (string) $value : $value,
-            'int' => is_numeric($value) || $value === null ? (int) $value : $value,
-            'float' => is_numeric($value) || $value === null ? (float) $value : $value,
+            'string' => $this->toScalarString($value),
+            'int' => $this->toInt($value),
+            'float' => $this->toFloat($value),
             'bool' => (bool) $value,
             default => $value,
         };
+    }
+
+    /**
+     * Cast value to string if possible
+     */
+    private function toScalarString(mixed $value): mixed
+    {
+        return is_scalar($value) || $value === null ? (string) $value : $value;
+    }
+
+    /**
+     * Cast value to int if possible
+     */
+    private function toInt(mixed $value): mixed
+    {
+        return is_numeric($value) || $value === null ? (int) $value : $value;
+    }
+
+    /**
+     * Cast value to float if possible
+     */
+    private function toFloat(mixed $value): mixed
+    {
+        return is_numeric($value) || $value === null ? (float) $value : $value;
     }
 }

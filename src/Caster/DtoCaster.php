@@ -147,16 +147,12 @@ final readonly class DtoCaster implements CasterInterface
      */
     private function castParameter(mixed $value, ReflectionParameter $param): mixed
     {
-        // If we have a registry, use it to find the appropriate caster
-        if ($this->registry !== null) {
-            $caster = $this->registry->resolve($param);
+        // Try registry-based casting first
+        $registryResult = $this->tryCastViaRegistry($value, $param);
 
-            // Avoid infinite recursion - don't use DtoCaster for parameters
-            if ($caster !== null && ! $caster instanceof self) {
-                return $caster->cast($value, $param);
-            }
+        if ($registryResult !== null) {
+            return $registryResult;
         }
-
 
         // Fallback to basic type casting
         $type = $param->getType();
@@ -175,13 +171,67 @@ final readonly class DtoCaster implements CasterInterface
         }
 
         // Basic scalar casting
+        return $this->castScalar($value, $typeName);
+    }
+
+    /**
+     * Try to cast value using the registry
+     *
+     * @return mixed|null Returns null if registry couldn't cast, otherwise the casted value
+     * @throws CastException
+     */
+    private function tryCastViaRegistry(mixed $value, ReflectionParameter $param): mixed
+    {
+        if ($this->registry === null) {
+            return null;
+        }
+
+        $caster = $this->registry->resolve($param);
+
+        // Avoid infinite recursion - don't use DtoCaster for parameters
+        if ($caster !== null && ! $caster instanceof self) {
+            return $caster->cast($value, $param);
+        }
+
+        return null;
+    }
+
+    /**
+     * Cast value to scalar type
+     */
+    private function castScalar(mixed $value, string $typeName): mixed
+    {
         return match ($typeName) {
-            'string' => is_scalar($value) || $value === null ? (string) $value : $value,
-            'int' => is_numeric($value) || $value === null ? (int) $value : $value,
-            'float' => is_numeric($value) || $value === null ? (float) $value : $value,
+            'string' => $this->toScalarString($value),
+            'int' => $this->toInt($value),
+            'float' => $this->toFloat($value),
             'bool' => (bool) $value,
             'array' => is_array($value) ? $value : (array) $value,
             default => $value,
         };
+    }
+
+    /**
+     * Cast value to string if possible
+     */
+    private function toScalarString(mixed $value): mixed
+    {
+        return is_scalar($value) || $value === null ? (string) $value : $value;
+    }
+
+    /**
+     * Cast value to int if possible
+     */
+    private function toInt(mixed $value): mixed
+    {
+        return is_numeric($value) || $value === null ? (int) $value : $value;
+    }
+
+    /**
+     * Cast value to float if possible
+     */
+    private function toFloat(mixed $value): mixed
+    {
+        return is_numeric($value) || $value === null ? (float) $value : $value;
     }
 }

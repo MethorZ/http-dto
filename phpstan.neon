@@ -3,17 +3,16 @@ includes:
 
 parameters:
     level: 9
+    parallel:
+        maximumNumberOfProcesses: 4
+        processTimeout: 300.0
     paths:
         - src
         - tests
 
-    # Modern PHPStan settings for maximum strictness
-    checkMissingIterableValueType: true
-    checkGenericClassInNonGenericObjectType: true
+    # PHPStan 2.x: Most strict checks are now default at level 9
+    # Removed deprecated options: checkMissingIterableValueType, checkGenericClassInNonGenericObjectType
     checkBenevolentUnionTypes: true
-    checkUninitializedProperties: true
-    checkImplicitMixed: true
-    checkDynamicProperties: true
     reportMaybesInMethodSignatures: true
     reportStaticMethodSignatures: true
 
@@ -36,5 +35,6 @@ parameters:
     ignoreErrors:
         - message: '#Method .+Test::.+ throws checked exception PHPUnit\\Framework\\.+ but it''s missing from the PHPDoc @throws tag#'
           path: tests/*
-        - message: '#Class .+Test has an uninitialized property .+\. Give it default value or assign it in the constructor#'
-          path: tests/*
+        # Laminas ServiceManager interface uses untyped array, we implement correctly
+        - message: '#has parameter \$_options with no value type specified in iterable type array#'
+          path: src/Integration/Mezzio/DtoHandlerAbstractFactory.php

@@ -9,9 +9,12 @@ use MethorZ\Dto\Exception\ValidationException;
 use MethorZ\Dto\Handler\DtoHandlerInterface;
 use MethorZ\Dto\Handler\DtoHandlerWrapper;
 use MethorZ\Dto\RequestDtoMapperInterface;
+use MethorZ\Dto\Response\JsonResponseFactory;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
@@ -37,6 +40,7 @@ final readonly class DtoHandlerWrapperFactory
      */
     public function __construct(
         private RequestDtoMapperInterface $dtoMapper,
+        private JsonResponseFactory $jsonResponseFactory,
         private mixed $errorHandler,
     ) {
     }
@@ -51,10 +55,18 @@ final readonly class DtoHandlerWrapperFactory
         /** @var RequestDtoMapperInterface $dtoMapper */
         $dtoMapper = $container->get(RequestDtoMapperInterface::class);
 
+        /** @var ResponseFactoryInterface $responseFactory */
+        $responseFactory = $container->get(ResponseFactoryInterface::class);
+
+        /** @var StreamFactoryInterface $streamFactory */
+        $streamFactory = $container->get(StreamFactoryInterface::class);
+
+        $jsonResponseFactory = new JsonResponseFactory($responseFactory, $streamFactory);
+
         /** @var callable(ValidationException|MappingException): ResponseInterface $errorHandler */
         $errorHandler = $container->get('dto.error_handler');
 
-        return new self($dtoMapper, $errorHandler);
+        return new self($dtoMapper, $jsonResponseFactory, $errorHandler);
     }
 
     /**
@@ -68,6 +80,7 @@ final readonly class DtoHandlerWrapperFactory
         return new DtoHandlerWrapper(
             $handler,
             $this->dtoMapper,
+            $this->jsonResponseFactory,
             $this->errorHandler,
         );
     }

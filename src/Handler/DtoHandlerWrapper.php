@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace MethorZ\Dto\Handler;
 
-use Laminas\Diactoros\Exception\InvalidArgumentException;
-use Laminas\Diactoros\Response\JsonResponse;
 use MethorZ\Dto\Exception\MappingException;
 use MethorZ\Dto\Exception\ValidationException;
 use MethorZ\Dto\RequestDtoMapperInterface;
+use MethorZ\Dto\Response\JsonResponseFactory;
 use MethorZ\Dto\Response\JsonSerializableDto;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -38,19 +37,20 @@ final readonly class DtoHandlerWrapper implements RequestHandlerInterface
     /**
      * @param DtoHandlerInterface $dtoHandler The DTO handler to wrap
      * @param RequestDtoMapperInterface $dtoMapper Maps requests to DTOs
-     * @param callable(ValidationException|MappingException): ResponseInterface $errorHandler Converts exceptions to responses
+     * @param JsonResponseFactory $jsonResponseFactory Creates JSON responses
+     * @param callable(ValidationException|MappingException): ResponseInterface $errorHandler
+     *        Converts exceptions to responses
      */
     public function __construct(
         private DtoHandlerInterface $dtoHandler,
         private RequestDtoMapperInterface $dtoMapper,
+        private JsonResponseFactory $jsonResponseFactory,
         private mixed $errorHandler,
     ) {
     }
 
     /**
      * Handle the request by extracting DTO, validating, and calling the handler
-     *
-     * @throws InvalidArgumentException
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
@@ -73,13 +73,10 @@ final readonly class DtoHandlerWrapper implements RequestHandlerInterface
 
             // Auto-serialize JsonSerializableDto responses
             if ($response instanceof JsonSerializableDto) {
-                return new JsonResponse(
-                    $response->jsonSerialize(),
-                    $response->getStatusCode(),
-                );
+                return $this->jsonResponseFactory->fromDto($response);
             }
 
-            // @phpstan-ignore-next-line return.unusedType (False positive - reachable when response is not JsonSerializableDto)
+            // @phpstan-ignore-next-line return.unusedType (reachable when response is not JsonSerializableDto)
             return $response;
         } catch (ValidationException | MappingException $e) {
             // Convert exception to error response

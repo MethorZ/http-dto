@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MethorZ\Dto\Middleware;
 
-use Laminas\Diactoros\Response\JsonResponse;
+use MethorZ\Dto\Response\JsonResponseFactory;
 use MethorZ\Dto\Response\JsonSerializableDto;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -18,7 +18,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  *
  * This middleware allows handlers to return DTOs directly instead of
  * ResponseInterface objects. Any object implementing JsonSerializableDto
- * will be automatically converted to a JsonResponse with the appropriate
+ * will be automatically converted to a JSON response with the appropriate
  * status code.
  *
  * Benefits:
@@ -26,6 +26,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  * - Perfect type safety (handler signature specifies exact DTO type)
  * - DTOs control their own serialization and status code
  * - Consistent with automatic request DTO injection
+ * - Framework-agnostic (uses PSR-17 factories)
  *
  * Usage:
  * ```php
@@ -38,20 +39,22 @@ use Psr\Http\Server\RequestHandlerInterface;
  * }
  * ```
  *
- * The middleware will automatically convert ItemResponse to JsonResponse.
+ * The middleware will automatically convert ItemResponse to JSON response.
  */
 final readonly class AutoJsonResponseMiddleware implements MiddlewareInterface
 {
+    public function __construct(
+        private JsonResponseFactory $jsonResponseFactory,
+    ) {
+    }
+
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $response = $handler->handle($request);
 
-        // If handler returned a DTO, convert to JsonResponse
+        // If handler returned a DTO, convert to JSON response
         if ($response instanceof JsonSerializableDto) {
-            return new JsonResponse(
-                $response->jsonSerialize(),
-                $response->getStatusCode(),
-            );
+            return $this->jsonResponseFactory->fromDto($response);
         }
 
         // If already a ResponseInterface, pass through unchanged

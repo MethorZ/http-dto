@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace MethorZ\Dto\Tests\Integration;
 
 use DateTimeImmutable;
-use Laminas\Diactoros\ServerRequest;
+use Nyholm\Psr7\ServerRequest;
 use MethorZ\Dto\RequestDtoMapper;
 use MethorZ\Dto\Tests\Fixtures\ComplexDto;
 use MethorZ\Dto\Tests\Fixtures\ExampleEnum;
@@ -53,8 +53,8 @@ final class RequestDtoMapperIntegrationTest extends TestCase
             ],
         ];
 
-        $request = new ServerRequest();
-        $request = $request->withParsedBody($requestData);
+        $request = (new ServerRequest('POST', '/'))
+            ->withParsedBody($requestData);
 
         // Map to complex DTO
         $dto = $this->mapper->map(ComplexDto::class, $request);

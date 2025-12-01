@@ -68,7 +68,10 @@
     </rule>
 
     <!-- Code Quality -->
-    <rule ref="SlevomatCodingStandard.Functions.UnusedParameter"/>
+    <rule ref="SlevomatCodingStandard.Functions.UnusedParameter">
+        <!-- Exclude files implementing external interfaces with required but unused params -->
+        <exclude-pattern>src/Integration/Mezzio/DtoHandlerAbstractFactory.php</exclude-pattern>
+    </rule>
     <rule ref="SlevomatCodingStandard.Functions.UselessParameterDefaultValue"/>
     <rule ref="SlevomatCodingStandard.Namespaces.UseDoesNotStartWithBackslash"/>
     <rule ref="SlevomatCodingStandard.Commenting.UselessInheritDocComment"/>
