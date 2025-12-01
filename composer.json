@@ -35,7 +35,7 @@
         "laminas/laminas-servicemanager": "^4.0",
         "phpstan/phpstan": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0",
-        "phpunit/phpunit": "^12.0",
+        "phpunit/phpunit": "^11.0 || ^12.0",
         "slevomat/coding-standard": "^8.25",
         "squizlabs/php_codesniffer": "^4.0",
         "symfony/validator": "^6.4 || ^7.0"
