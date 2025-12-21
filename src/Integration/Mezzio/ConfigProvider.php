@@ -4,28 +4,32 @@ declare(strict_types=1);
 
 namespace MethorZ\Dto\Integration\Mezzio;
 
+use MethorZ\Dto\Exception\MappingException;
+use MethorZ\Dto\Exception\ValidationException;
 use MethorZ\Dto\Factory\DtoHandlerWrapperFactory;
 use MethorZ\Dto\Middleware\AutoJsonResponseMiddleware;
 use MethorZ\Dto\RequestDtoMapper;
 use MethorZ\Dto\RequestDtoMapperInterface;
 use MethorZ\Dto\Response\JsonResponseFactory;
+use MethorZ\Dto\Validator\NullValidator;
 use MethorZ\Dto\Validator\SymfonyValidatorAdapter;
+use MethorZ\Dto\Validator\ValidatorInterface as DtoValidatorInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Validator\ValidatorInterface as SymfonyValidatorInterface;
 
 /**
  * Mezzio configuration provider for the http-dto package
  *
- * Registers the automatic DTO handler wrapping via abstract factory.
+ * Zero-config integration - just add to your ConfigAggregator and it works!
  *
- * NOTE: This is a Mezzio-specific integration. For other frameworks,
- * you can manually configure the RequestDtoMapper and DtoHandlerWrapperFactory.
- *
- * Requirements:
- * - ResponseFactoryInterface and StreamFactoryInterface must be registered in the container
- *   (typically provided by laminas-diactoros, nyholm/psr7, or any PSR-17 implementation)
+ * Provides:
+ * - Automatic DTO handler wrapping via abstract factory
+ * - Automatic validation (if symfony/validator is installed)
+ * - Default error handler for validation/mapping errors
  *
  * Usage in config/config.php:
  * ```php
@@ -35,12 +39,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * ]);
  * ```
  *
- * Then define a custom error handler in your Base ConfigProvider:
+ * Customization (optional):
+ * Override 'dto.error_handler' in your ConfigProvider to customize error responses:
  * ```php
- * 'services' => [
- *     'dto.error_handler' => function ($exception) {
- *         // Return PSR-7 ResponseInterface
- *         return ApiResponse::validationError($exception->getErrors());
+ * 'factories' => [
+ *     'dto.error_handler' => fn() => function ($exception) {
+ *         return new JsonResponse(['error' => $exception->getMessage()], 400);
  *     },
  * ],
  * ```
@@ -68,13 +72,35 @@ final class ConfigProvider
                 RequestDtoMapperInterface::class => RequestDtoMapper::class,
             ],
             'factories' => [
-                // DTO mapper with Symfony Validator adapter
+                // Symfony Validator - auto-configured if symfony/validator is installed
+                SymfonyValidatorInterface::class => static function (): SymfonyValidatorInterface {
+                    return Validation::createValidatorBuilder()
+                        ->enableAttributeMapping()
+                        ->getValidator();
+                },
+
+                // DTO Validator - uses Symfony Validator if available, otherwise NullValidator
+                DtoValidatorInterface::class => static function (
+                    ContainerInterface $container,
+                ): DtoValidatorInterface {
+                    // Use Symfony Validator if available
+                    if ($container->has(SymfonyValidatorInterface::class)) {
+                        /** @var SymfonyValidatorInterface $symfonyValidator */
+                        $symfonyValidator = $container->get(SymfonyValidatorInterface::class);
+
+                        return new SymfonyValidatorAdapter($symfonyValidator);
+                    }
+
+                    // Fallback to NullValidator (no validation)
+                    return new NullValidator();
+                },
+
+                // DTO mapper with validator
                 RequestDtoMapper::class => static function (
                     ContainerInterface $container,
                 ): RequestDtoMapper {
-                    /** @var ValidatorInterface $symfonyValidator */
-                    $symfonyValidator = $container->get(ValidatorInterface::class);
-                    $validator = new SymfonyValidatorAdapter($symfonyValidator);
+                    /** @var DtoValidatorInterface $validator */
+                    $validator = $container->get(DtoValidatorInterface::class);
 
                     return new RequestDtoMapper($validator);
                 },
@@ -87,6 +113,34 @@ final class ConfigProvider
                     $streamFactory = $container->get(StreamFactoryInterface::class);
 
                     return new JsonResponseFactory($responseFactory, $streamFactory);
+                },
+
+                // Default error handler - returns RFC 7807-style JSON error response
+                'dto.error_handler' => static function (
+                    ContainerInterface $container,
+                ): callable {
+                    /** @var JsonResponseFactory $jsonResponseFactory */
+                    $jsonResponseFactory = $container->get(JsonResponseFactory::class);
+
+                    return static function (
+                        ValidationException|MappingException $exception,
+                    ) use ($jsonResponseFactory): ResponseInterface {
+                        $data = [
+                            'type' => 'about:blank',
+                            'title' => $exception instanceof ValidationException
+                                ? 'Validation Failed'
+                                : 'Bad Request',
+                            'status' => 400,
+                            'detail' => $exception->getMessage(),
+                        ];
+
+                        // Add validation errors if available
+                        if ($exception instanceof ValidationException) {
+                            $data['errors'] = $exception->getErrors();
+                        }
+
+                        return $jsonResponseFactory->create($data, 400);
+                    };
                 },
 
                 // Wrapper factory needs mapper, JSON factory, and error handler
@@ -118,7 +172,7 @@ final class ConfigProvider
                 },
             ],
             'abstract_factories' => [
-                // ✨ Magic! Automatically wraps all DtoHandlerInterface implementations
+                // Automatically wraps all DtoHandlerInterface implementations
                 DtoHandlerAbstractFactory::class,
             ],
         ];
