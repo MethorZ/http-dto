@@ -8,6 +8,8 @@ use MethorZ\Dto\Exception\MappingException;
 use MethorZ\Dto\Exception\ValidationException;
 use MethorZ\Dto\Handler\DtoHandlerInterface;
 use MethorZ\Dto\RequestDtoMapperInterface;
+use MethorZ\Dto\Response\JsonResponseFactory;
+use MethorZ\Dto\Response\JsonSerializableDto;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -17,27 +19,32 @@ use ReflectionException;
 use ReflectionNamedType;
 
 use function count;
+use function sprintf;
 
 /**
  * Automatic DTO injection middleware
  *
  * This middleware automatically handles DTO mapping, validation, and injection:
  * 1. Detects handlers implementing DtoHandlerInterface
- * 2. Inspects __invoke() signature to determine DTO class
+ * 2. Inspects __invoke() signature to determine DTO class from type hint
  * 3. Maps request to DTO
  * 4. Validates DTO
  * 5. Catches validation/mapping exceptions and converts to error responses
  * 6. Injects validated DTO as parameter to handler's __invoke()
+ * 7. Auto-serializes JsonSerializableDto responses to JSON
  *
  * Usage: Just register this one middleware in your pipeline!
  */
 final readonly class AutoDtoInjectionMiddleware implements MiddlewareInterface
 {
     /**
+     * @param RequestDtoMapperInterface $dtoMapper Maps requests to DTOs
+     * @param JsonResponseFactory $jsonResponseFactory Creates JSON responses
      * @param callable(ValidationException|MappingException): ResponseInterface $errorHandler
      */
     public function __construct(
         private RequestDtoMapperInterface $dtoMapper,
+        private JsonResponseFactory $jsonResponseFactory,
         private mixed $errorHandler,
     ) {
     }
@@ -47,74 +54,91 @@ final readonly class AutoDtoInjectionMiddleware implements MiddlewareInterface
         RequestHandlerInterface $handler,
     ): ResponseInterface {
         // Only process handlers that implement DtoHandlerInterface
-        if (! $handler instanceof DtoHandlerInterface) {
+        if (!$handler instanceof DtoHandlerInterface) {
             return $handler->handle($request);
         }
 
         try {
-            // Get the DTO class from the handler's __invoke() signature
+            // Get the DTO class from the handler's __invoke() type hint
             $dtoClass = $this->extractDtoClass($handler);
-
-            if ($dtoClass === null) {
-                // No DTO parameter found, fallback to standard handle()
-                return $handler->handle($request);
-            }
 
             // Map and validate request → DTO
             $dto = $this->dtoMapper->map($dtoClass, $request);
 
-            // Call handler with DTO injected as parameter
-            return $handler->__invoke($request, $dto);
+            // Call handler with DTO injected as parameter (use callable invocation)
+            /** @var callable(ServerRequestInterface, object): JsonSerializableDto $handler */
+            $response = $handler($request, $dto);
+
+            // Auto-serialize JsonSerializableDto responses
+            return $this->jsonResponseFactory->fromDto($response);
         } catch (ValidationException | MappingException $e) {
             // Convert exception to error response
             return ($this->errorHandler)($e);
-        } catch (ReflectionException) {
-            // Fallback to normal handling if reflection fails
-            return $handler->handle($request);
+        } catch (ReflectionException $e) {
+            return ($this->errorHandler)(
+                new MappingException(
+                    'Failed to analyze handler signature: ' . $e->getMessage(),
+                    0,
+                    $e,
+                ),
+            );
         }
     }
 
     /**
-     * Extract the DTO class from handler's __invoke() method signature
+     * Extract the DTO class from handler's __invoke() method type hint
      *
-     * Looks for the second parameter's type hint (the DTO class)
+     * Requires the second parameter to have a class type hint.
      *
-     * @return class-string|null
-     * @throws \ReflectionException
+     * @return class-string
+     * @throws MappingException If handler is improperly configured
+     * @throws ReflectionException
      */
-    private function extractDtoClass(DtoHandlerInterface $handler): ?string
+    private function extractDtoClass(DtoHandlerInterface $handler): string
     {
         $reflection = new ReflectionClass($handler);
 
         // Check if __invoke() method exists
-        if (! $reflection->hasMethod('__invoke')) {
-            return null;
+        if (!$reflection->hasMethod('__invoke')) {
+            throw new MappingException(
+                sprintf(
+                    'DtoHandlerInterface implementation %s must provide an __invoke() method',
+                    $handler::class,
+                ),
+            );
         }
 
         $invokeMethod = $reflection->getMethod('__invoke');
-        $parameters   = $invokeMethod->getParameters();
+        $parameters = $invokeMethod->getParameters();
 
-        // __invoke() should have at least 2 parameters: (ServerRequestInterface $request, DtoClass $dto)
+        // __invoke() must have at least 2 parameters
         if (count($parameters) < 2) {
-            return null;
+            throw new MappingException(
+                sprintf(
+                    '%s::__invoke() must have at least 2 parameters: (ServerRequestInterface $request, YourDtoType $dto)',
+                    $handler::class,
+                ),
+            );
         }
 
         // Get the second parameter (the DTO)
         $dtoParameter = $parameters[1];
-        $dtoType      = $dtoParameter->getType();
+        $dtoType = $dtoParameter->getType();
 
-        if (! $dtoType instanceof ReflectionNamedType || $dtoType->isBuiltin()) {
-            return null;
+        // Require type hint
+        if (!$dtoType instanceof ReflectionNamedType || $dtoType->isBuiltin()) {
+            $typeName = $dtoType instanceof ReflectionNamedType ? $dtoType->getName() : 'no type';
+
+            throw new MappingException(
+                sprintf(
+                    'The $dto parameter in %s::__invoke() must have a class type hint. Found: %s',
+                    $handler::class,
+                    $typeName,
+                ),
+            );
         }
 
-        $className = $dtoType->getName();
-
-        // Ensure it's a valid class
-        if (!class_exists($className)) {
-            return null;
-        }
-
-        /** @var class-string $className */
-        return $className;
+        /** @var class-string */
+        return $dtoType->getName();
     }
 }

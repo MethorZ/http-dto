@@ -17,13 +17,14 @@ use ReflectionException;
 use ReflectionNamedType;
 
 use function count;
+use function sprintf;
 
 /**
  * PSR-15 wrapper for DtoHandlerInterface handlers
  *
  * This wrapper makes DTO handlers compatible with standard PSR-15 middleware
  * pipelines by:
- * 1. Automatically extracting the DTO class from the handler's __invoke() signature
+ * 1. Automatically extracting the DTO class from the handler's __invoke() type hint
  * 2. Mapping and validating the request to a DTO
  * 3. Calling the handler with the validated DTO
  * 4. Auto-serializing JsonSerializableDto responses to JSON
@@ -55,29 +56,19 @@ final readonly class DtoHandlerWrapper implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         try {
-            // Extract DTO class from handler's __invoke() signature
+            // Extract DTO class from handler's __invoke() type hint
             $dtoClass = $this->extractDtoClass();
-
-            if ($dtoClass === null) {
-                // No DTO parameter found - should not happen with DtoHandlerInterface
-                throw new MappingException(
-                    'Handler does not have a DTO parameter in __invoke() method',
-                );
-            }
 
             // Map and validate request → DTO
             $dto = $this->dtoMapper->map($dtoClass, $request);
 
-            // Call handler with validated DTO
-            $response = $this->dtoHandler->__invoke($request, $dto);
+            // Call handler with validated DTO (use callable invocation)
+            /** @var callable(ServerRequestInterface, object): JsonSerializableDto $handler */
+            $handler = $this->dtoHandler;
+            $response = $handler($request, $dto);
 
             // Auto-serialize JsonSerializableDto responses
-            if ($response instanceof JsonSerializableDto) {
-                return $this->jsonResponseFactory->fromDto($response);
-            }
-
-            // @phpstan-ignore-next-line return.unusedType (reachable when response is not JsonSerializableDto)
-            return $response;
+            return $this->jsonResponseFactory->fromDto($response);
         } catch (ValidationException | MappingException $e) {
             // Convert exception to error response
             return ($this->errorHandler)($e);
@@ -94,103 +85,59 @@ final readonly class DtoHandlerWrapper implements RequestHandlerInterface
     }
 
     /**
-     * Extract the DTO class from handler's __invoke() method signature
+     * Extract the DTO class from handler's __invoke() method type hint
      *
-     * Looks for the second parameter's type hint (the DTO class).
-     * Falls back to @param annotation if no type hint present.
+     * Requires the second parameter to have a type hint (the DTO class).
      *
-     * @return class-string|null
+     * @return class-string
+     * @throws MappingException If __invoke() method is missing or improperly typed
      * @throws ReflectionException
      */
-    private function extractDtoClass(): ?string
+    private function extractDtoClass(): string
     {
         $reflection = new ReflectionClass($this->dtoHandler);
 
         // Check if __invoke() method exists
-        if (! $reflection->hasMethod('__invoke')) {
-            return null;
+        if (!$reflection->hasMethod('__invoke')) {
+            throw new MappingException(
+                sprintf(
+                    'DtoHandlerInterface implementation %s must provide an __invoke() method',
+                    $this->dtoHandler::class,
+                ),
+            );
         }
 
         $invokeMethod = $reflection->getMethod('__invoke');
-        $parameters   = $invokeMethod->getParameters();
+        $parameters = $invokeMethod->getParameters();
 
-        // __invoke() should have at least 2 parameters: (ServerRequestInterface $request, DtoClass $dto)
+        // __invoke() must have at least 2 parameters: (ServerRequestInterface $request, DtoClass $dto)
         if (count($parameters) < 2) {
-            return null;
+            throw new MappingException(
+                sprintf(
+                    '%s::__invoke() must have at least 2 parameters: (ServerRequestInterface $request, YourDtoType $dto)',
+                    $this->dtoHandler::class,
+                ),
+            );
         }
 
         // Get the second parameter (the DTO)
         $dtoParameter = $parameters[1];
-        $dtoType      = $dtoParameter->getType();
+        $dtoType = $dtoParameter->getType();
 
-        // Try to get type from type hint first
-        if ($dtoType instanceof ReflectionNamedType && ! $dtoType->isBuiltin()) {
-            /** @var class-string */
-            return $dtoType->getName();
+        // Require type hint (no fallback to PHPDoc)
+        if (!$dtoType instanceof ReflectionNamedType || $dtoType->isBuiltin()) {
+            $typeName = $dtoType instanceof ReflectionNamedType ? $dtoType->getName() : 'no type';
+
+            throw new MappingException(
+                sprintf(
+                    'The $dto parameter in %s::__invoke() must have a class type hint. Found: %s',
+                    $this->dtoHandler::class,
+                    $typeName,
+                ),
+            );
         }
 
-        // Fall back to @param annotation
-        $docComment = $invokeMethod->getDocComment();
-        if ($docComment !== false && preg_match('/@param\s+([^\s]+)\s+\$dto/', $docComment, $matches)) {
-            $type = trim($matches[1]);
-
-            // Already fully qualified?
-            if (str_starts_with($type, '\\')) {
-                /** @var class-string */
-                return ltrim($type, '\\');
-            }
-
-            // Try to resolve from use statements
-            $resolvedType = $this->resolveClassFromUseStatements($reflection, $type);
-            if ($resolvedType !== null) {
-                return $resolvedType;
-            }
-
-            // Assume same namespace as handler
-            $namespace = $reflection->getNamespaceName();
-            if ($namespace) {
-                /** @var class-string */
-                return $namespace . '\\' . $type;
-            }
-
-            /** @var class-string */
-            return $type;
-        }
-
-        return null;
-    }
-
-    /**
-     * Resolve a class name using the handler's use statements
-     *
-     * @param ReflectionClass<DtoHandlerInterface> $reflection
-     * @return class-string|null
-     */
-    private function resolveClassFromUseStatements(ReflectionClass $reflection, string $className): ?string
-    {
-        $fileName = $reflection->getFileName();
-        if ($fileName === false) {
-            return null;
-        }
-
-        $fileContents = file_get_contents($fileName);
-        if ($fileContents === false) {
-            return null;
-        }
-
-        // Extract use statements
-        if (preg_match_all('/^use\s+([^\s;]+)(?:\s+as\s+([^\s;]+))?\s*;/m', $fileContents, $matches, PREG_SET_ORDER)) {
-            foreach ($matches as $match) {
-                $fullClass = $match[1];
-                $alias     = $match[2] ?? basename(str_replace('\\', '/', $fullClass));
-
-                if ($alias === $className) {
-                    /** @var class-string */
-                    return $fullClass;
-                }
-            }
-        }
-
-        return null;
+        /** @var class-string */
+        return $dtoType->getName();
     }
 }

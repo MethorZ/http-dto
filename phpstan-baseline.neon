@@ -49,20 +49,20 @@ parameters:
 			path: src/Caster/EnumCaster.php
 
 		-
-			message: '#^Instanceof between MethorZ\\Dto\\Response\\JsonSerializableDto and MethorZ\\Dto\\Response\\JsonSerializableDto will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
+			message: '#^PHPDoc tag @var with type callable is not subtype of native type MethorZ\\Dto\\Handler\\DtoHandlerInterface\.$#'
+			identifier: varTag.nativeType
 			count: 1
 			path: src/Handler/DtoHandlerWrapper.php
 
 		-
-			message: '#^Method MethorZ\\Dto\\Middleware\\AutoDtoInjectionMiddleware\:\:process\(\) should return Psr\\Http\\Message\\ResponseInterface but returns MethorZ\\Dto\\Response\\JsonSerializableDto\.$#'
-			identifier: return.type
+			message: '#^PHPDoc tag @var with type callable is not subtype of native type MethorZ\\Dto\\Handler\\DtoHandlerInterface&Psr\\Http\\Server\\RequestHandlerInterface\.$#'
+			identifier: varTag.nativeType
 			count: 1
 			path: src/Middleware/AutoDtoInjectionMiddleware.php
 
 		-
-			message: '#^Method MethorZ\\Dto\\Middleware\\DtoParameterInjectionMiddleware\:\:process\(\) should return Psr\\Http\\Message\\ResponseInterface but returns MethorZ\\Dto\\Response\\JsonSerializableDto\.$#'
-			identifier: return.type
+			message: '#^PHPDoc tag @var with type callable is not subtype of native type MethorZ\\Dto\\Handler\\DtoHandlerInterface&Psr\\Http\\Server\\RequestHandlerInterface\.$#'
+			identifier: varTag.nativeType
 			count: 1
 			path: src/Middleware/DtoParameterInjectionMiddleware.php
 

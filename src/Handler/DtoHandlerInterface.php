@@ -4,26 +4,20 @@ declare(strict_types=1);
 
 namespace MethorZ\Dto\Handler;
 
-use MethorZ\Dto\Response\JsonSerializableDto;
-use Psr\Http\Message\ServerRequestInterface;
-
 /**
- * Marker interface for handlers that use automatic DTO parameter injection
+ * Marker interface for handlers using automatic DTO injection
  *
- * Handlers implementing this interface can use the __invoke() method with
- * a DTO parameter that will be automatically mapped, validated, and injected
- * by the AutoDtoInjectionMiddleware.
+ * Handlers implementing this interface must provide an __invoke() method with the signature:
+ *   public function __invoke(ServerRequestInterface $request, YourDtoType $dto): JsonSerializableDto
  *
- * This interface does NOT extend RequestHandlerInterface because:
- * - The middleware intercepts and calls __invoke() directly
- * - No PSR-15 handle() method is needed (eliminates boilerplate)
- * - Cleaner separation between DTO pattern and standard PSR-15 pattern
+ * The DTO type is extracted via reflection from the actual type hint on the $dto parameter.
  *
  * Benefits:
- * - Type-safe DTO parameter injection
- * - Automatic request mapping and validation
- * - Clean handler signatures (no obsolete handle() method)
- * - Compile-time type checking
+ * - Full type safety with native PHP type hints
+ * - Perfect IDE autocomplete and refactoring support
+ * - Static analysis catches type errors at build time
+ * - No PHPDoc parsing required
+ * - Simpler, more maintainable code
  *
  * Example:
  * ```php
@@ -31,36 +25,17 @@ use Psr\Http\Message\ServerRequestInterface;
  * {
  *     public function __invoke(
  *         ServerRequestInterface $request,
- *         CreateItemRequest $dto  // ← Automatically injected!
- *     ): ItemResponse {
- *         return $this->service->execute($dto);
+ *         CreateItemRequest $dto  // Fully typed!
+ *     ): JsonSerializableDto {
+ *         return new ItemCreatedResponse($this->service->create($dto));
  *     }
  * }
  * ```
+ *
+ * Migration from v1.x:
+ * Simply add the type hint to your $dto parameter. Remove PHPDoc @param if only used for type hinting.
  */
 interface DtoHandlerInterface
 {
-    /**
-     * Handle the request with automatic DTO injection
-     *
-     * The second parameter will be automatically:
-     * - Mapped from the request body/query/route parameters
-     * - Validated using Symfony Validator attributes
-     * - Injected as a typed parameter
-     *
-     * The return value must be a DTO implementing JsonSerializableDto,
-     * which will be automatically serialized to JSON with the appropriate
-     * HTTP status code.
-     *
-     * Note: The $dto parameter has no type hint in the interface to allow
-     * implementations to specify their own specific DTO types (e.g., CreateItemRequest).
-     * This is required for PHP's contravariance rules.
-     *
-     * @param ServerRequestInterface $request The PSR-7 request
-     * @param object $dto The validated DTO (specific type determined by implementation)
-     * @return JsonSerializableDto Response DTO (automatically serialized)
-     *
-     * @phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
-     */
-    public function __invoke(ServerRequestInterface $request, $dto): JsonSerializableDto;
+    // Marker interface - implementations define their own __invoke() signature with typed DTO parameter
 }
