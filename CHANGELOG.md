@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-12-25
+
+### Added
+- Route parameter support: Route parameters (e.g., `{id}` in `/articles/{id}`) are now automatically mapped to DTO properties
+- Enhanced attribute filtering: PSR-7 and framework internal attributes are now properly excluded from DTO mapping
+- Only scalar route parameters are included in DTO mapping (objects and arrays are excluded)
+
+### Changed
+- **Priority order for request data** is now clearly defined:
+  - Query parameters (lowest priority)
+  - Request body (JSON/form data)
+  - Route parameters (highest priority - always wins)
+- Expanded list of excluded PSR-7 internal attributes to prevent mapping conflicts
+
+### Technical Details
+- Updated `RequestDtoMapper::extractRequestData()` to filter out more internal attributes
+- Added: `handler`, `middleware`, `_route`, `_route_params`, `__route__`, `route` to exclusion list
+- Non-scalar attribute values are now filtered out automatically
+
+This is a backwards-compatible feature addition. No breaking changes.
+
 ## [2.0.0] - 2025-12-22
 
 ### Changed
