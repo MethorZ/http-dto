@@ -222,6 +222,12 @@ final readonly class RequestDtoMapper implements RequestDtoMapperInterface
                 continue;
             }
 
+            // If parameter is nullable, pass null instead of throwing
+            if ($parameter->allowsNull()) {
+                $args[] = null;
+                continue;
+            }
+
             // Parameter is required but missing
             throw MappingException::missingRequiredParameter(
                 $dtoClass,
