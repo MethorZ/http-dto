@@ -123,7 +123,8 @@ final readonly class DtoParameterInjectionMiddleware implements MiddlewareInterf
         if (count($parameters) < 2) {
             throw new MappingException(
                 sprintf(
-                    '%s::__invoke() must have at least 2 parameters: (ServerRequestInterface $request, YourDtoType $dto)',
+                    '%s::__invoke() must have at least 2 parameters: '
+                    . '(ServerRequestInterface $request, YourDtoType $dto)',
                     $handler::class,
                 ),
             );

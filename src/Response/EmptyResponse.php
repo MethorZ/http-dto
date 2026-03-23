@@ -21,6 +21,9 @@ namespace MethorZ\Dto\Response;
  */
 final readonly class EmptyResponse implements JsonSerializableDto
 {
+    /**
+     * @return array<never, never>
+     */
     public function jsonSerialize(): array
     {
         return [];
@@ -31,4 +34,3 @@ final readonly class EmptyResponse implements JsonSerializableDto
         return 204; // No Content
     }
 }
-

@@ -6,6 +6,7 @@ namespace MethorZ\Dto\Tests\Unit;
 
 use MethorZ\Dto\Exception\MappingException;
 use MethorZ\Dto\RequestDtoMapper;
+use MethorZ\Dto\Tests\Fixtures\TestDtoWithId;
 use MethorZ\Dto\Validator\SymfonyValidatorAdapter;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
@@ -122,14 +123,5 @@ final class RequestDtoMapperTest extends TestCase
 
         // Only scalar 'id' should be mapped
         $this->assertSame('123', $dto->id);
-    }
-}
-
-// Test DTOs
-final readonly class TestDtoWithId
-{
-    public function __construct(
-        public string $id,
-    ) {
     }
 }

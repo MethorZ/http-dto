@@ -103,12 +103,6 @@ parameters:
 			path: src/Response/AbstractDto.php
 
 		-
-			message: '#^Method MethorZ\\Dto\\Response\\EmptyResponse\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Response/EmptyResponse.php
-
-		-
 			message: '#^Method MethorZ\\Dto\\Response\\JsonResponseFactory\:\:create\(\) throws checked exception InvalidArgumentException but it''s missing from the PHPDoc @throws tag\.$#'
 			identifier: missingType.checkedException
 			count: 3
