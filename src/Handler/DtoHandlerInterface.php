@@ -8,7 +8,7 @@ namespace MethorZ\Dto\Handler;
  * Marker interface for handlers using automatic DTO injection
  *
  * Handlers implementing this interface must provide an __invoke() method with the signature:
- *   public function __invoke(ServerRequestInterface $request, YourDtoType $dto): JsonSerializableDto
+ *   public function __invoke(ServerRequestInterface $request, YourDtoType $dto): JsonSerializableDto|ResponseInterface
  *
  * The DTO type is extracted via reflection from the actual type hint on the $dto parameter.
  *
@@ -26,7 +26,7 @@ namespace MethorZ\Dto\Handler;
  *     public function __invoke(
  *         ServerRequestInterface $request,
  *         CreateItemRequest $dto  // Fully typed!
- *     ): JsonSerializableDto {
+ *     ): JsonSerializableDto|ResponseInterface {
  *         return new ItemCreatedResponse($this->service->create($dto));
  *     }
  * }

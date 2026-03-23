@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.3] - 2026-03-23
+
+### Fixed
+- `DtoHandlerWrapper::handle()` now passes raw `ResponseInterface` responses through unchanged instead of attempting JSON serialization via `fromDto()`. Handlers that return binary responses (e.g. file downloads, image serving) no longer cause a `TypeError` → HTTP 500. This mirrors the behaviour of `AutoJsonResponseMiddleware`.
+
+### Changed
+- Updated `DtoHandlerInterface` docblock to document `ResponseInterface` as a valid handler return type alongside `JsonSerializableDto`.
+
+### Added
+- `DtoHandlerWrapperTest` with coverage for: DTO → JSON serialization, raw `ResponseInterface` passthrough, and `ValidationException` error handler routing.
+
 ## [2.1.0] - 2025-12-25
 
 ### Added

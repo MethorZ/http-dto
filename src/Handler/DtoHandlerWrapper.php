@@ -28,7 +28,8 @@ use function sprintf;
  * 2. Mapping and validating the request to a DTO
  * 3. Calling the handler with the validated DTO
  * 4. Auto-serializing JsonSerializableDto responses to JSON
- * 5. Handling validation/mapping errors with custom error responses
+ * 5. Passing through raw ResponseInterface responses unchanged (e.g. binary file downloads)
+ * 6. Handling validation/mapping errors with custom error responses
  *
  * This eliminates the need for handlers to implement RequestHandlerInterface
  * themselves, making them cleaner and more focused on business logic.
@@ -63,12 +64,17 @@ final readonly class DtoHandlerWrapper implements RequestHandlerInterface
             $dto = $this->dtoMapper->map($dtoClass, $request);
 
             // Call handler with validated DTO (use callable invocation)
-            /** @var callable(ServerRequestInterface, object): JsonSerializableDto $handler */
+            /** @var callable(ServerRequestInterface, object): JsonSerializableDto|ResponseInterface $handler */
             $handler = $this->dtoHandler;
             $response = $handler($request, $dto);
 
-            // Auto-serialize JsonSerializableDto responses
-            return $this->jsonResponseFactory->fromDto($response);
+            // If handler returned a DTO, serialize it to JSON
+            if ($response instanceof JsonSerializableDto) {
+                return $this->jsonResponseFactory->fromDto($response);
+            }
+
+            // Pass through raw ResponseInterface (e.g. binary file downloads) unchanged
+            return $response;
         } catch (ValidationException | MappingException $e) {
             // Convert exception to error response
             return ($this->errorHandler)($e);
@@ -114,7 +120,8 @@ final readonly class DtoHandlerWrapper implements RequestHandlerInterface
         if (count($parameters) < 2) {
             throw new MappingException(
                 sprintf(
-                    '%s::__invoke() must have at least 2 parameters: (ServerRequestInterface $request, YourDtoType $dto)',
+                    '%s::__invoke() must have at least 2 parameters: '
+                    . '(ServerRequestInterface $request, YourDtoType $dto)',
                     $this->dtoHandler::class,
                 ),
             );

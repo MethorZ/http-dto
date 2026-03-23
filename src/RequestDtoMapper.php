@@ -164,7 +164,7 @@ final readonly class RequestDtoMapper implements RequestDtoMapperInterface
 
         // Merge route attributes (highest priority - e.g., {id} from route)
         $attributes = $request->getAttributes();
-        
+
         // Exclude known PSR-7 and framework internal attributes
         $excludedAttributes = [
             'request-target',
@@ -176,7 +176,7 @@ final readonly class RequestDtoMapper implements RequestDtoMapperInterface
             '__route__',
             'route',
         ];
-        
+
         foreach ($attributes as $key => $value) {
             // Skip internal PSR-7 attributes and non-scalar values
             if (in_array($key, $excludedAttributes, true) || !is_scalar($value)) {
