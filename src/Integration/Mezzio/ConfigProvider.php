@@ -72,12 +72,7 @@ final class ConfigProvider
                 RequestDtoMapperInterface::class => RequestDtoMapper::class,
             ],
             'factories' => [
-                // Symfony Validator - auto-configured if symfony/validator is installed
-                SymfonyValidatorInterface::class => static function (): SymfonyValidatorInterface {
-                    return Validation::createValidatorBuilder()
-                        ->enableAttributeMapping()
-                        ->getValidator();
-                },
+                ...$this->getSymfonyValidatorFactories(),
 
                 // DTO Validator - uses Symfony Validator if available, otherwise NullValidator
                 DtoValidatorInterface::class => static function (
@@ -175,6 +170,29 @@ final class ConfigProvider
                 // Automatically wraps all DtoHandlerInterface implementations
                 DtoHandlerAbstractFactory::class,
             ],
+        ];
+    }
+
+    /**
+     * Symfony Validator - auto-configured if symfony/validator is installed
+     *
+     * symfony/validator is optional: registering its factory without the package
+     * would make the container report a service it cannot build.
+     *
+     * @return array<string, callable>
+     */
+    private function getSymfonyValidatorFactories(): array
+    {
+        if (!class_exists(Validation::class)) {
+            return [];
+        }
+
+        return [
+            SymfonyValidatorInterface::class => static function (): SymfonyValidatorInterface {
+                return Validation::createValidatorBuilder()
+                    ->enableAttributeMapping()
+                    ->getValidator();
+            },
         ];
     }
 }

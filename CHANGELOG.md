@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-10-22
+
+### Fixed
+- The Mezzio `ConfigProvider` no longer registers a Symfony Validator factory when `symfony/validator` is not installed. Previously every DTO handler failed with "Class Symfony\Component\Validator\Validation not found" instead of falling back to `NullValidator`.
+
 ## [2.2.0] - 2026-10-22
 
 ### Changed
@@ -84,6 +89,7 @@ This is a backwards-compatible feature addition. No breaking changes.
 - Comprehensive test suite
 - Complete documentation with examples
 
+[2.2.1]: https://github.com/methorz/http-dto/releases/tag/v2.2.1
 [2.2.0]: https://github.com/methorz/http-dto/releases/tag/v2.2.0
 [1.0.0]: https://github.com/methorz/http-dto/releases/tag/v1.0.0
 
