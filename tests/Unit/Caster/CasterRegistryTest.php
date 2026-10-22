@@ -49,7 +49,7 @@ final class CasterRegistryTest extends TestCase
     {
         $registry = new CasterRegistry();
         $caster1 = new ScalarCaster();
-        $caster2 = $this->createMock(CasterInterface::class);
+        $caster2 = $this->createStub(CasterInterface::class);
 
         $registry->register($caster1);
         $registry->register($caster2);

@@ -451,12 +451,6 @@ parameters:
 			path: tests/Unit/RequestDtoMapperTest.php
 
 		-
-			message: '#^Readonly property MethorZ\\Dto\\Tests\\Unit\\Response\\ConcreteTestDto\:\:\$value is assigned outside of its declaring class\.$#'
-			identifier: property.readOnlyAssignOutOfClass
-			count: 1
-			path: tests/Unit/Response/AbstractDtoTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<string, mixed\> will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 4
@@ -661,21 +655,9 @@ parameters:
 			path: tests/Unit/Trait/DtoArrayConversionTraitTest.php
 
 		-
-			message: '#^Cannot access offset ''home_address'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: tests/Unit/Transformer/DtoTransformerTest.php
-
-		-
 			message: '#^Cannot access offset ''password'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
-			path: tests/Unit/Transformer/DtoTransformerTest.php
-
-		-
-			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
-			identifier: argument.type
-			count: 3
 			path: tests/Unit/Transformer/DtoTransformerTest.php
 
 		-

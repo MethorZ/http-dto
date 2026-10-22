@@ -40,9 +40,9 @@ final class DtoHandlerWrapperTest extends TestCase
     {
         $responseDto = new TestResponseDto('test-value');
         $requestDto = new TestRequestDto('request');
-        $request = $this->createMock(ServerRequestInterface::class);
+        $request = $this->createStub(ServerRequestInterface::class);
 
-        $mapper = $this->createMock(RequestDtoMapperInterface::class);
+        $mapper = $this->createStub(RequestDtoMapperInterface::class);
         $mapper->method('map')->willReturn($requestDto);
 
         $errorHandler = new TestErrorHandler($this->psr17Factory->createResponse(422));
@@ -66,9 +66,9 @@ final class DtoHandlerWrapperTest extends TestCase
             ->withHeader('Content-Disposition', 'inline; filename="chart.png"');
 
         $requestDto = new TestRequestDto('request');
-        $request = $this->createMock(ServerRequestInterface::class);
+        $request = $this->createStub(ServerRequestInterface::class);
 
-        $mapper = $this->createMock(RequestDtoMapperInterface::class);
+        $mapper = $this->createStub(RequestDtoMapperInterface::class);
         $mapper->method('map')->willReturn($requestDto);
 
         $errorHandler = new TestErrorHandler($this->psr17Factory->createResponse(422));
@@ -88,10 +88,10 @@ final class DtoHandlerWrapperTest extends TestCase
 
     public function testValidationExceptionCallsErrorHandler(): void
     {
-        $request = $this->createMock(ServerRequestInterface::class);
+        $request = $this->createStub(ServerRequestInterface::class);
         $errorResponse = $this->psr17Factory->createResponse(422);
 
-        $mapper = $this->createMock(RequestDtoMapperInterface::class);
+        $mapper = $this->createStub(RequestDtoMapperInterface::class);
         $mapper->method('map')->willThrowException(ValidationException::fromErrors(['name' => 'Required']));
 
         $errorHandler = new TestErrorHandler($errorResponse);

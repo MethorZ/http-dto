@@ -18,13 +18,13 @@
         }
     ],
     "require": {
-        "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
+        "php": "~8.4.27 || ~8.5.12",
         "psr/container": "^2.0",
         "psr/http-factory": "^1.0",
         "psr/http-message": "^1.0 || ^2.0",
         "psr/http-server-handler": "^1.0",
         "psr/http-server-middleware": "^1.0",
-        "ramsey/uuid": "^4.7"
+        "ramsey/uuid": "^4.9"
     },
     "suggest": {
         "laminas/laminas-servicemanager": "For Mezzio integration (use Integration\\Mezzio\\ConfigProvider)",
@@ -32,13 +32,13 @@
     },
     "require-dev": {
         "nyholm/psr7": "^1.8",
-        "laminas/laminas-servicemanager": "^4.0",
-        "phpstan/phpstan": "^2.0",
-        "phpstan/phpstan-strict-rules": "^2.0",
-        "phpunit/phpunit": "^11.0 || ^12.0",
-        "slevomat/coding-standard": "^8.25",
-        "squizlabs/php_codesniffer": "^4.0",
-        "symfony/validator": "^6.4 || ^7.0"
+        "laminas/laminas-servicemanager": "^4.5",
+        "phpstan/phpstan": "^2.3",
+        "phpstan/phpstan-strict-rules": "^2.1",
+        "phpunit/phpunit": "^13.4",
+        "slevomat/coding-standard": "^8.31",
+        "squizlabs/php_codesniffer": "^4.0.1",
+        "symfony/validator": "^7.4 || ^8.1"
     },
     "autoload": {
         "psr-4": {

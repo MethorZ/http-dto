@@ -17,6 +17,9 @@ final class AbstractDtoTest extends TestCase
         $this->assertSame('test-value', $dto->value);
     }
 
+    /**
+     * @throws \ReflectionException
+     */
     public function testDtoIsReadonly(): void
     {
         $dto = new ConcreteTestDto('initial');
@@ -25,7 +28,7 @@ final class AbstractDtoTest extends TestCase
 
         // Readonly class cannot have properties modified - this would throw error at runtime
         $this->expectException(\Error::class);
-        $dto->value = 'modified';
+        (new \ReflectionProperty($dto, 'value'))->setValue($dto, 'modified');
     }
 
     public function testMultiplePropertiesDto(): void

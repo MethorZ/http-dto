@@ -39,7 +39,7 @@ final class RequestDtoMapperTest extends TestCase
 
     public function testMapThrowsExceptionForNonExistentClass(): void
     {
-        $request = $this->createMock(ServerRequestInterface::class);
+        $request = $this->createStub(ServerRequestInterface::class);
         $request->method('getParsedBody')->willReturn([]);
         $request->method('getAttributes')->willReturn([]);
         $request->method('getQueryParams')->willReturn([]);
@@ -50,7 +50,7 @@ final class RequestDtoMapperTest extends TestCase
 
     public function testRouteParametersAreMappedToDto(): void
     {
-        $request = $this->createMock(ServerRequestInterface::class);
+        $request = $this->createStub(ServerRequestInterface::class);
         $request->method('getParsedBody')->willReturn([]);
         $request->method('getQueryParams')->willReturn([]);
         $request->method('getAttributes')->willReturn(['id' => '123']);
@@ -63,7 +63,7 @@ final class RequestDtoMapperTest extends TestCase
 
     public function testRouteParametersOverrideBodyParameters(): void
     {
-        $request = $this->createMock(ServerRequestInterface::class);
+        $request = $this->createStub(ServerRequestInterface::class);
         $request->method('getParsedBody')->willReturn(['id' => 'body-id']);
         $request->method('getQueryParams')->willReturn([]);
         $request->method('getAttributes')->willReturn(['id' => 'route-id']);
@@ -75,7 +75,7 @@ final class RequestDtoMapperTest extends TestCase
 
     public function testRouteParametersOverrideQueryParameters(): void
     {
-        $request = $this->createMock(ServerRequestInterface::class);
+        $request = $this->createStub(ServerRequestInterface::class);
         $request->method('getParsedBody')->willReturn([]);
         $request->method('getQueryParams')->willReturn(['id' => 'query-id']);
         $request->method('getAttributes')->willReturn(['id' => 'route-id']);
@@ -87,7 +87,7 @@ final class RequestDtoMapperTest extends TestCase
 
     public function testPsr7InternalAttributesAreExcluded(): void
     {
-        $request = $this->createMock(ServerRequestInterface::class);
+        $request = $this->createStub(ServerRequestInterface::class);
         $request->method('getParsedBody')->willReturn([]);
         $request->method('getQueryParams')->willReturn([]);
         $request->method('getAttributes')->willReturn([
@@ -110,7 +110,7 @@ final class RequestDtoMapperTest extends TestCase
 
     public function testNonScalarAttributesAreExcluded(): void
     {
-        $request = $this->createMock(ServerRequestInterface::class);
+        $request = $this->createStub(ServerRequestInterface::class);
         $request->method('getParsedBody')->willReturn([]);
         $request->method('getQueryParams')->willReturn([]);
         $request->method('getAttributes')->willReturn([

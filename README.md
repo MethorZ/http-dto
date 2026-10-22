@@ -5,7 +5,7 @@
 [![CI](https://github.com/MethorZ/http-dto/actions/workflows/ci.yml/badge.svg)](https://github.com/MethorZ/http-dto/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/MethorZ/http-dto/graph/badge.svg)](https://codecov.io/gh/MethorZ/http-dto)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%209-brightgreen.svg)](https://phpstan.org/)
-[![PHP Version](https://img.shields.io/badge/php-%5E8.2-blue.svg)](https://php.net)
+[![PHP Version](https://img.shields.io/badge/php-~8.4.27%20%7C%7C%20~8.5.12-blue.svg)](https://php.net)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ## What is this?
@@ -289,7 +289,7 @@ The middleware automatically handles validation errors:
 
 ## Requirements
 
-- PHP 8.2+
+- PHP 8.4 (>= 8.4.27) or PHP 8.5 (>= 8.5.12)
 - PSR-7 (HTTP Message Interface)
 - PSR-15 (HTTP Server Middleware)
 - Symfony Validator

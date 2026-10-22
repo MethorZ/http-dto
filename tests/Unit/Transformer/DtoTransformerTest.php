@@ -66,9 +66,15 @@ final class DtoTransformerTest extends TestCase
 
         $this->assertArrayHasKey('user_id', $result);
         $this->assertArrayHasKey('user_profile', $result);
-        $this->assertArrayHasKey('first_name', $result['user_profile']);
-        $this->assertArrayHasKey('home_address', $result['user_profile']);
-        $this->assertArrayHasKey('street_name', $result['user_profile']['home_address']);
+
+        $userProfile = $result['user_profile'];
+        $this->assertIsArray($userProfile);
+        $this->assertArrayHasKey('first_name', $userProfile);
+        $this->assertArrayHasKey('home_address', $userProfile);
+
+        $homeAddress = $userProfile['home_address'];
+        $this->assertIsArray($homeAddress);
+        $this->assertArrayHasKey('street_name', $homeAddress);
     }
 
     public function testFiltersKeys(): void
