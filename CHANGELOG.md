@@ -29,6 +29,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `DtoHandlerWrapperTest` with coverage for: DTO → JSON serialization, raw `ResponseInterface` passthrough, and `ValidationException` error handler routing.
 
+## [2.1.2] - 2026-01-02
+
+### Fixed
+- Nullable constructor parameters without a default value (for example `?string $contractId`) receive `null` when the request does not contain them, instead of failing with "Required parameter ... is missing".
+
+## [2.1.1] - 2026-01-02
+
+### Added
+- `EmptyResponse` DTO for DELETE endpoints: HTTP 204 No Content with an empty body.
+
 ## [2.1.0] - 2025-12-25
 
 ### Added
@@ -72,6 +82,11 @@ This is a backwards-compatible feature addition. No breaking changes.
 - Static analysis catches type errors at build time
 - Simpler, more maintainable code
 
+## [1.1.0] - 2025-12-21
+
+### Added
+- The Mezzio `ConfigProvider` works without configuration: it provides a Symfony Validator factory, falls back to `NullValidator` when Symfony Validator is not installed, and registers a default `dto.error_handler` that returns RFC 7807-style JSON responses.
+
 ## [1.0.0] - 2025-11-27
 
 ### Added
@@ -91,5 +106,11 @@ This is a backwards-compatible feature addition. No breaking changes.
 
 [2.2.1]: https://github.com/methorz/http-dto/releases/tag/v2.2.1
 [2.2.0]: https://github.com/methorz/http-dto/releases/tag/v2.2.0
+[2.1.3]: https://github.com/methorz/http-dto/releases/tag/v2.1.3
+[2.1.2]: https://github.com/methorz/http-dto/releases/tag/v2.1.2
+[2.1.1]: https://github.com/methorz/http-dto/releases/tag/v2.1.1
+[2.1.0]: https://github.com/methorz/http-dto/releases/tag/v2.1.0
+[2.0.0]: https://github.com/methorz/http-dto/releases/tag/v2.0.0
+[1.1.0]: https://github.com/methorz/http-dto/releases/tag/v1.1.0
 [1.0.0]: https://github.com/methorz/http-dto/releases/tag/v1.0.0
 
